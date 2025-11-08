@@ -1,5 +1,48 @@
+# ========================================================
+# ✅ GoAds 360° Softgen .gitignore (React + Vite + Supabase)
+# ========================================================
+
+# Node dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+.out/
+.output/
+.vercel/
+.next/
+.cache/
+
+# Supabase & Firebase generated folders
+.supabase/
+firebase-debug.log
+.firebaserc
+.storage/
+.functions/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+
+# Editor & system files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +50,24 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Lock files (optional for Softgen)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Lovable AI & AI Studio export artifacts
+.lovable/
+.ai_studio/
+.ai/
+.ai_cache/
+ai_build/
+
+# OS junk
+ehthumbs.db
+Desktop.ini

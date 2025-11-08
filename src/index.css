@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 215 25% 27%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 27%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 27%;
+
+    --primary: 211 100% 48%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 211 100% 65%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 174 72% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 160 84% 39%;
+
+    --radius: 0.75rem;
+
+    /* Chart colors */
+    --chart-1: 160 84% 39%;
+    --chart-2: 170 100% 41%;
+    --chart-3: 180 100% 45%;
+    --chart-4: 190 94% 43%;
+    --chart-5: 200 98% 39%;
+
+    /* Custom design tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(160 84% 39%), hsl(170 100% 41%));
+    --gradient-hero: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(170 100% 41%) 50%, hsl(180 100% 45%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(210 40% 98%), hsl(0 0% 100%));
+    
+    --shadow-elegant: 0 20px 60px -10px hsl(160 84% 39% / 0.15);
+    --shadow-glow: 0 0 40px hsl(160 84% 49% / 0.25);
+    --shadow-card: 0 4px 20px hsl(220 13% 8% / 0.08);
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Brand Blue Theme */
+  .brand-blue {
+    --background: 210 100% 98%;
+    --foreground: 217 91% 20%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 217 91% 60%;
+    --muted: 210 40% 96%;
+    --sidebar-background: 217 91% 95%;
+    --sidebar-accent: 217 91% 90%;
+  }
+
+  /* Brand Green Theme */
+  .brand-green {
+    --background: 142 76% 98%;
+    --foreground: 142 71% 20%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 142 71% 45%;
+    --muted: 142 76% 96%;
+    --sidebar-background: 142 76% 95%;
+    --sidebar-accent: 142 76% 90%;
+  }
+
+  .dark {
+    --background: 215 28% 9%;
+    --foreground: 210 40% 98%;
+
+    --card: 215 28% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 215 28% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 211 100% 48%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 211 100% 65%;
+
+    --secondary: 215 20% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 215 20% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 174 72% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 20% 17%;
+    --input: 215 20% 17%;
+    --ring: 211 100% 48%;
+
+    /* Chart colors for dark mode */
+    --chart-1: 211 100% 48%;
+    --chart-2: 174 72% 36%;
+    --chart-3: 180 100% 45%;
+    --chart-4: 190 94% 43%;
+    --chart-5: 200 98% 39%;
+
+    /* Dark mode custom tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 48%), hsl(174 72% 36%));
+    --gradient-hero: linear-gradient(135deg, hsl(211 100% 48%) 0%, hsl(174 72% 36%) 50%, hsl(180 100% 45%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(215 28% 11%), hsl(215 20% 17%));
+    
+    --shadow-elegant: 0 20px 60px -10px hsl(211 100% 48% / 0.3);
+    --shadow-glow: 0 0 60px hsl(211 100% 65% / 0.4);
+    --shadow-card: 0 4px 24px hsl(211 100% 48% / 0.12);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Remove number input spinners (up/down arrows) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Enhanced dropdown styling */
+@layer components {
+  .dropdown-content {
+    @apply bg-popover text-popover-foreground z-50;
+  }
+  
+  /* Enhanced form sections */
+  .form-section {
+    @apply bg-card border border-border rounded-xl p-6 space-y-5 shadow-sm;
+  }
+
+  .form-section-header {
+    @apply text-lg font-semibold text-foreground mb-4 pb-3 border-b border-border;
+  }
+
+  .form-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5;
+  }
+
+  .form-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-5;
+  }
+
+  .form-label-required::after {
+    @apply content-['*'] text-destructive ml-1;
+  }
+
+  .input-group {
+    @apply space-y-2;
+  }
+
+  .input-with-icon {
+    @apply relative;
+  }
+
+  .input-icon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground;
+  }
+
+  .form-helper-text {
+    @apply text-xs text-muted-foreground mt-1;
+  }
+
+  .form-error-text {
+    @apply text-xs text-destructive mt-1;
+  }
+}

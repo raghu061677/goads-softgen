@@ -53,72 +53,98 @@ export default function PlanEdit() {
   });
 
   useEffect(() => {
-    fetchClients();
-    fetchAvailableAssets();
-    fetchPlan();
+    const loadData = async () => {
+      // Fetch clients and assets in parallel
+      const [clientsRes, assetsRes] = await Promise.all([
+        supabase.from('clients').select('*').order('name'),
+        supabase.from('media_assets').select('*').order('city', { ascending: true })
+      ]);
+
+      const clientsData = clientsRes.data || [];
+      const assetsData = assetsRes.data || [];
+      setClients(clientsData);
+      setAvailableAssets(assetsData);
+
+      if (id) {
+        const { data: plan } = await supabase.from('plans').select('*').eq('id', id).single();
+        if (plan) {
+          const planStartDate = new Date(plan.start_date);
+          const planEndDate = new Date(plan.end_date);
+          setFormData({
+            id: plan.id,
+            client_id: plan.client_id,
+            client_name: plan.client_name,
+            plan_name: plan.plan_name,
+            plan_type: plan.plan_type,
+            start_date: planStartDate,
+            end_date: planEndDate,
+            gst_percent: plan.gst_percent.toString(),
+            notes: plan.notes || "",
+          });
+
+          const { data: items } = await supabase.from('plan_items').select('*').eq('plan_id', id);
+          if (items) {
+            const selected = new Set(items.map(i => i.asset_id));
+            setSelectedAssets(selected);
+
+            const pricing: Record<string, any> = {};
+            const days = calculateDurationDays(planStartDate, planEndDate);
+
+            items.forEach(item => {
+              const asset = assetsData.find(a => a.id === item.asset_id);
+              let isNegotiated = false;
+              if (asset) {
+                const monthlyRate = asset.card_rate || 0;
+                const prorataRate = calculateProRata(monthlyRate, days);
+                if (Math.abs(item.sales_price - prorataRate) > 0.01) {
+                  isNegotiated = true;
+                }
+              } else {
+                isNegotiated = true; // Asset not in available list, so price must be custom.
+              }
+              
+              pricing[item.asset_id] = {
+                sales_price: item.sales_price,
+                printing_charges: item.printing_charges || 0,
+                mounting_charges: item.mounting_charges || 0,
+                discount_type: item.discount_type || 'Percent',
+                discount_value: item.discount_value || 0,
+                isNegotiated,
+              };
+            });
+            setAssetPricing(pricing);
+          }
+        }
+      }
+    };
+    loadData();
   }, [id]);
 
-  const fetchPlan = async () => {
-    const { data: plan } = await supabase
-      .from('plans')
-      .select('*')
-      .eq('id', id)
-      .single();
+  useEffect(() => {
+    if (selectedAssets.size === 0 || availableAssets.length === 0) return;
 
-    if (plan) {
-      setFormData({
-        id: plan.id,
-        client_id: plan.client_id,
-        client_name: plan.client_name,
-        plan_name: plan.plan_name,
-        plan_type: plan.plan_type,
-        start_date: new Date(plan.start_date),
-        end_date: new Date(plan.end_date),
-        gst_percent: plan.gst_percent.toString(),
-        notes: plan.notes || "",
+    const days = calculateDurationDays(new Date(formData.start_date), new Date(formData.end_date));
+    
+    setAssetPricing(currentPricing => {
+      const newPricing = { ...currentPricing };
+      let hasChanged = false;
+      selectedAssets.forEach(assetId => {
+        const asset = availableAssets.find(a => a.id === assetId);
+        if (asset && newPricing[assetId] && !newPricing[assetId].isNegotiated) {
+          const monthlyRate = asset.card_rate || 0;
+          const prorataRate = calculateProRata(monthlyRate, days);
+          if (newPricing[assetId].sales_price !== prorataRate) {
+            newPricing[assetId] = {
+              ...newPricing[assetId],
+              sales_price: prorataRate,
+            };
+            hasChanged = true;
+          }
+        }
       });
-
-      // Fetch plan items
-      const { data: items } = await supabase
-        .from('plan_items')
-        .select('*')
-        .eq('plan_id', id);
-
-      if (items) {
-        const selected = new Set(items.map(i => i.asset_id));
-        setSelectedAssets(selected);
-
-        const pricing: Record<string, any> = {};
-        items.forEach(item => {
-          pricing[item.asset_id] = {
-            sales_price: item.sales_price,
-            printing_charges: item.printing_charges || 0,
-            mounting_charges: item.mounting_charges || 0,
-            discount_type: item.discount_type || 'Percent',
-            discount_value: item.discount_value || 0,
-          };
-        });
-        setAssetPricing(pricing);
-      }
-    }
-  };
-
-  const fetchClients = async () => {
-    const { data } = await supabase
-      .from('clients')
-      .select('*')
-      .order('name');
-    setClients(data || []);
-  };
-
-  const fetchAvailableAssets = async () => {
-    const { data } = await supabase
-      .from('media_assets')
-      .select('*')
-      .eq('status', 'Available')
-      .order('city', { ascending: true });
-    setAvailableAssets(data || []);
-  };
+      return hasChanged ? newPricing : currentPricing;
+    });
+  }, [formData.start_date, formData.end_date, selectedAssets, availableAssets]);
 
   const handleClientSelect = (clientId: string) => {
     const client = clients.find(c => c.id === clientId);
@@ -153,6 +179,7 @@ export default function PlanEdit() {
           mounting_charges: asset.mounting_charges || 0,
           discount_type: 'Percent',
           discount_value: 0,
+          isNegotiated: false,
         }
       }));
     }
@@ -174,8 +201,18 @@ export default function PlanEdit() {
       [assetId]: {
         ...prev[assetId],
         [field]: value,
+        ...(field === 'sales_price' && { isNegotiated: true }),
       }
     }));
+  };
+
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const days = parseInt(e.target.value, 10);
+    if (!isNaN(days) && days > 0) {
+      const newEndDate = new Date(formData.start_date);
+      newEndDate.setDate(newEndDate.getDate() + days - 1);
+      setFormData(prev => ({ ...prev, end_date: newEndDate }));
+    }
   };
 
   const calculateTotals = () => {
@@ -471,8 +508,8 @@ export default function PlanEdit() {
                   <Input
                     type="number"
                     value={durationDays}
-                    disabled
-                    className="h-10 bg-muted/30 font-semibold text-lg"
+                    onChange={handleDurationChange}
+                    className="h-10 font-semibold text-lg"
                   />
                   <p className="text-xs text-muted-foreground">Auto-calculated (inclusive)</p>
                 </div>
